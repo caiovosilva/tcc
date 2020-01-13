@@ -7,6 +7,7 @@ namespace BipTranslator.Models
     public enum MenuItemType
     {
         Browse,
+        Listening,
         About
     }
     public class HomeMenuItem
