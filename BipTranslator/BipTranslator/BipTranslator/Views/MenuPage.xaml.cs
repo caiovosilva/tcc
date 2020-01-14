@@ -12,7 +12,7 @@ namespace BipTranslator.Views
     [DesignTimeVisible(false)]
     public partial class MenuPage : ContentPage
     {
-        MainPage RootPage { get => Application.Current.MainPage as MainPage; }
+        ListeningPage RootPage { get => Application.Current.MainPage as ListeningPage; }
         List<HomeMenuItem> menuItems;
         public MenuPage()
         {
@@ -20,8 +20,8 @@ namespace BipTranslator.Views
 
             menuItems = new List<HomeMenuItem>
             {
-                new HomeMenuItem {Id = MenuItemType.Browse, Title="Browse" },
                 new HomeMenuItem {Id = MenuItemType.Listening, Title="Listening" },
+                new HomeMenuItem {Id = MenuItemType.Browse, Title="Browse" },
                 new HomeMenuItem {Id = MenuItemType.About, Title="About" }
             };
 
