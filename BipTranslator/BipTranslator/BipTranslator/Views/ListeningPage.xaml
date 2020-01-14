@@ -12,10 +12,14 @@
     </ContentPage.BindingContext>
     <ContentPage.Content>
         <StackLayout>
-            <Button Margin="0,10,0,0" Text="Iniciar Gravação"
-                        Clicked="Button_Clicked"
-                        BackgroundColor="Blue"
-                        TextColor="White" />
+            <StackLayout Padding="20,80,20,0" Orientation="Vertical" Spacing="15">
+                <StackLayout Orientation="Horizontal">
+                    <Switch x:Name="TimeoutSwitch" IsToggled="True" />
+                    <Label Text="Timeout after silence?" />
+                </StackLayout>
+                <Button x:Name="RecordButton" Text="Record" FontSize="24" HorizontalOptions="FillAndExpand" Clicked="Record_Clicked" />
+                <Button x:Name="PlayButton" Text="Play" FontSize="24" HorizontalOptions="FillAndExpand" Clicked="Play_Clicked" IsEnabled="False" />
+            </StackLayout>
             <Label Text="Welcome to Xamarin.Forms!"
                 VerticalOptions="CenterAndExpand" 
                 HorizontalOptions="CenterAndExpand" />
