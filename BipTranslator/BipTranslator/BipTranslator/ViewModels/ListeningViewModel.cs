@@ -8,12 +8,7 @@ namespace BipTranslator.ViewModels
     {
         public ListeningViewModel()
         {
-            Title = "About";
-        }
-
-        public void ListenButtonClicked()
-        {
-            var a = 1;
+            Title = "Clica aê cabra!";
         }
     }
 }
