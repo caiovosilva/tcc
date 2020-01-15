@@ -8,6 +8,7 @@ using Xamarin.Forms;
 using System.ComponentModel;
 using Xamarin.Forms.Xaml;
 using Plugin.AudioRecorder;
+using BipTranslator.Interfaces;
 
 namespace BipTranslator.Views
 {
@@ -20,12 +21,7 @@ namespace BipTranslator.Views
         {
             InitializeComponent();
 
-            recorder = new AudioRecorderService
-            {
-                StopRecordingAfterTimeout = true,
-                TotalAudioTimeout = TimeSpan.FromSeconds(15),
-                AudioSilenceTimeout = TimeSpan.FromSeconds(2)
-            };
+			recorder = DependencyService.Get<IAudioRecorder>().GetAudioRecorder();
 
             player = new AudioPlayer();
             player.FinishedPlaying += Player_FinishedPlaying;
@@ -42,7 +38,7 @@ namespace BipTranslator.Views
 			{
 				if (!recorder.IsRecording) //Record button clicked
 				{
-					recorder.StopRecordingOnSilence = TimeoutSwitch.IsToggled;
+					recorder.StopRecordingOnSilence = false;
 
 					RecordButton.IsEnabled = false;
 					PlayButton.IsEnabled = false;
@@ -53,7 +49,7 @@ namespace BipTranslator.Views
 					RecordButton.Text = "Stop Recording";
 					RecordButton.IsEnabled = true;
 
-					await audioRecordTask;
+					var file = await audioRecordTask;
 
 					RecordButton.Text = "Record";
 					PlayButton.IsEnabled = true;
@@ -85,7 +81,7 @@ namespace BipTranslator.Views
 			try
 			{
 				var filePath = recorder.GetAudioFilePath();
-
+				var streampath = recorder.GetAudioFileStream();
 				if (filePath != null)
 				{
 					PlayButton.IsEnabled = false;
