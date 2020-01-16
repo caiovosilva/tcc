@@ -9,6 +9,8 @@ using System.ComponentModel;
 using Xamarin.Forms.Xaml;
 using Plugin.AudioRecorder;
 using BipTranslator.Interfaces;
+using Plugin.Permissions;
+using Plugin.Permissions.Abstractions;
 
 namespace BipTranslator.Views
 {
@@ -20,7 +22,6 @@ namespace BipTranslator.Views
         public ListeningPage()
         {
             InitializeComponent();
-
 			recorder = DependencyService.Get<IAudioRecorder>().GetAudioRecorder();
 
             player = new AudioPlayer();
@@ -29,7 +30,23 @@ namespace BipTranslator.Views
 
 		async void Record_Clicked(object sender, EventArgs e)
 		{
-			await RecordAudio();
+			await RecordIfPermissionsGranted();	
+		}
+
+		async Task RecordIfPermissionsGranted()
+		{
+			var statusStorage = await CrossPermissions.Current.CheckPermissionStatusAsync(Permission.Storage);
+			var statusMicrophone = await CrossPermissions.Current.CheckPermissionStatusAsync(Permission.Microphone);
+			if (statusStorage == PermissionStatus.Granted && statusMicrophone == PermissionStatus.Granted)
+			{
+				await RecordAudio();
+			}
+			else
+			{
+				await TryToGetPermissionsAsync();
+				await RecordIfPermissionsGranted();
+
+			}
 		}
 
 		async Task RecordAudio()
@@ -102,5 +119,58 @@ namespace BipTranslator.Views
             PlayButton.IsEnabled = true;
             RecordButton.IsEnabled = true;
         }
-    }
+
+		private async Task<bool> TryToGetPermissionsAsync()
+		{
+			bool permissionsGranted = true;
+
+			var permissionsStartList = new List<Permission>()
+			{
+				Permission.Storage,
+				Permission.Microphone
+			};
+
+			var permissionsNeededList = new List<Permission>();
+			try
+			{
+				foreach (var permission in permissionsStartList)
+				{
+					var status = await CrossPermissions.Current.CheckPermissionStatusAsync(permission);
+					if (status != PermissionStatus.Granted)
+					{
+						permissionsNeededList.Add(permission);
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+			}
+
+			var results = await CrossPermissions.Current.RequestPermissionsAsync(permissionsNeededList.ToArray());
+
+			try
+			{
+				foreach (var permission in permissionsNeededList)
+				{
+					var status = PermissionStatus.Unknown;
+					//Best practice to always check that the key exists
+					if (results.ContainsKey(permission))
+						status = results[permission];
+					if (status == PermissionStatus.Granted || status == PermissionStatus.Unknown)
+					{
+						permissionsGranted = true;
+					}
+					else
+					{
+						permissionsGranted = false;
+						break;
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+			}
+			return permissionsGranted;
+		}
+	}
 }
