@@ -17,7 +17,7 @@
                     <Switch x:Name="TimeoutSwitch" IsToggled="True" />
                     <Label Text="Timeout after silence?" />
                 </StackLayout>
-                <Button x:Name="RecordButton" Text="Record" FontSize="24" HorizontalOptions="FillAndExpand" Clicked="Record_Clicked" />
+                <Button x:Name="RecordButton" Text="Record" FontSize="24" HorizontalOptions="FillAndExpand" Clicked="Record_Clicked"/>
                 <Button x:Name="PlayButton" Text="Play" FontSize="24" HorizontalOptions="FillAndExpand" Clicked="Play_Clicked" IsEnabled="False" />
             </StackLayout>
             <Label Text="Welcome to Xamarin.Forms!"
