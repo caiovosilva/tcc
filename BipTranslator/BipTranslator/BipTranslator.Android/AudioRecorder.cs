@@ -21,7 +21,6 @@ namespace BipTranslator.Droid
         {
             return new AudioRecorderService
             {
-                FilePath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments),
                 StopRecordingAfterTimeout = true,
                 StopRecordingOnSilence = false,
                 TotalAudioTimeout = TimeSpan.FromSeconds(15),
