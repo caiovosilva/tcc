@@ -11,6 +11,8 @@ using Plugin.AudioRecorder;
 using BipTranslator.Interfaces;
 using Plugin.Permissions;
 using Plugin.Permissions.Abstractions;
+using PCLStorage;
+using MediaManager;
 
 namespace BipTranslator.Views
 {
@@ -93,18 +95,23 @@ namespace BipTranslator.Views
 			PlayAudio();
 		}
 
-		void PlayAudio()
+		async void PlayAudio()
 		{
 			try
 			{
 				var filePath = recorder.GetAudioFilePath();
 				var streampath = recorder.GetAudioFileStream();
+				var mainDir = Xamarin.Essentials.FileSystem.AppDataDirectory;
+				var files = new System.IO.DirectoryInfo(mainDir).GetFiles();
+
+				//player.Play("https://ia800806.us.archive.org/15/items/Mp3Playlist_555/AaronNeville-CrazyLove.mp3");
 				if (filePath != null)
 				{
+				await CrossMediaManager.Current.Play(filePath);
+					//CopyAudioAsync(filePath);
 					PlayButton.IsEnabled = false;
 					RecordButton.IsEnabled = false;
 
-					player.Play(filePath);
 				}
 			}
 			catch (Exception ex)
@@ -127,7 +134,9 @@ namespace BipTranslator.Views
 			var permissionsStartList = new List<Permission>()
 			{
 				Permission.Storage,
-				Permission.Microphone
+				Permission.Microphone,
+				Permission.MediaLibrary,
+				Permission.Speech
 			};
 
 			var permissionsNeededList = new List<Permission>();
@@ -171,6 +180,21 @@ namespace BipTranslator.Views
 			{
 			}
 			return permissionsGranted;
+		}
+
+		private async Task CopyAudioAsync(string audioFile)
+		{
+			IFileSystem fileSystem = FileSystem.Current;
+			IFolder rootFolder = fileSystem.RoamingStorage;
+			try
+			{
+				IFile pickedAudio = await fileSystem.GetFileFromPathAsync(audioFile);
+				await pickedAudio.MoveAsync(rootFolder.Path, NameCollisionOption.ReplaceExisting);
+			}
+			catch (Exception ex)
+			{
+				await DisplayAlert("Copy Audio", ex.Message, "OK");
+			}
 		}
 	}
 }

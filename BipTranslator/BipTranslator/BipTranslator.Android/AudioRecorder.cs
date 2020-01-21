@@ -11,6 +11,7 @@ using Android.Views;
 using Android.Widget;
 using BipTranslator.Interfaces;
 using Plugin.AudioRecorder;
+using Xamarin.Essentials;
 
 [assembly: Xamarin.Forms.Dependency(typeof(BipTranslator.Droid.AudioRecorder))]
 namespace BipTranslator.Droid
@@ -21,7 +22,7 @@ namespace BipTranslator.Droid
         {
             return new AudioRecorderService
             {
-                StopRecordingAfterTimeout = true,
+                StopRecordingAfterTimeout = false,
                 StopRecordingOnSilence = false,
                 TotalAudioTimeout = TimeSpan.FromSeconds(15),
                 AudioSilenceTimeout = TimeSpan.FromSeconds(2)
