@@ -20,14 +20,10 @@ namespace BipTranslator.Views
     public partial class ListeningPage : ContentPage
     {
         AudioRecorderService recorder;
-        AudioPlayer player;
         public ListeningPage()
         {
             InitializeComponent();
 			recorder = DependencyService.Get<IAudioRecorder>().GetAudioRecorder();
-
-            player = new AudioPlayer();
-            player.FinishedPlaying += Player_FinishedPlaying;
         }
 
 		async void Record_Clicked(object sender, EventArgs e)
@@ -100,18 +96,13 @@ namespace BipTranslator.Views
 			try
 			{
 				var filePath = recorder.GetAudioFilePath();
-				var streampath = recorder.GetAudioFileStream();
-				var mainDir = Xamarin.Essentials.FileSystem.AppDataDirectory;
-				var files = new System.IO.DirectoryInfo(mainDir).GetFiles();
-
-				//player.Play("https://ia800806.us.archive.org/15/items/Mp3Playlist_555/AaronNeville-CrazyLove.mp3");
 				if (filePath != null)
 				{
-				await CrossMediaManager.Current.Play(filePath);
-					//CopyAudioAsync(filePath);
 					PlayButton.IsEnabled = false;
 					RecordButton.IsEnabled = false;
-
+					await CrossMediaManager.Current.Play(filePath);
+					PlayButton.IsEnabled = true;
+					RecordButton.IsEnabled = true;
 				}
 			}
 			catch (Exception ex)
@@ -121,12 +112,6 @@ namespace BipTranslator.Views
 			}
 		}
 
-		void Player_FinishedPlaying(object sender, EventArgs e)
-        {
-            PlayButton.IsEnabled = true;
-            RecordButton.IsEnabled = true;
-        }
-
 		private async Task<bool> TryToGetPermissionsAsync()
 		{
 			bool permissionsGranted = true;
@@ -135,8 +120,6 @@ namespace BipTranslator.Views
 			{
 				Permission.Storage,
 				Permission.Microphone,
-				Permission.MediaLibrary,
-				Permission.Speech
 			};
 
 			var permissionsNeededList = new List<Permission>();
@@ -182,19 +165,19 @@ namespace BipTranslator.Views
 			return permissionsGranted;
 		}
 
-		private async Task CopyAudioAsync(string audioFile)
-		{
-			IFileSystem fileSystem = FileSystem.Current;
-			IFolder rootFolder = fileSystem.RoamingStorage;
-			try
-			{
-				IFile pickedAudio = await fileSystem.GetFileFromPathAsync(audioFile);
-				await pickedAudio.MoveAsync(rootFolder.Path, NameCollisionOption.ReplaceExisting);
-			}
-			catch (Exception ex)
-			{
-				await DisplayAlert("Copy Audio", ex.Message, "OK");
-			}
-		}
+		//private async Task CopyAudioAsync(string audioFile)
+		//{
+		//	IFileSystem fileSystem = FileSystem.Current;
+		//	IFolder rootFolder = fileSystem.RoamingStorage;
+		//	try
+		//	{
+		//		IFile pickedAudio = await fileSystem.GetFileFromPathAsync(audioFile);
+		//		await pickedAudio.MoveAsync(rootFolder.Path, NameCollisionOption.ReplaceExisting);
+		//	}
+		//	catch (Exception ex)
+		//	{
+		//		await DisplayAlert("Copy Audio", ex.Message, "OK");
+		//	}
+		//}
 	}
 }
