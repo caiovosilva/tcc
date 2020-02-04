@@ -12,7 +12,9 @@ using BipTranslator.Interfaces;
 using Plugin.Permissions;
 using Plugin.Permissions.Abstractions;
 using PCLStorage;
-using MediaManager;
+using Xamarin.Essentials;
+using BipTranslator.Services;
+using System.IO;
 
 namespace BipTranslator.Views
 {
@@ -98,18 +100,33 @@ namespace BipTranslator.Views
 				var filePath = recorder.GetAudioFilePath();
 				if (filePath != null)
 				{
-					PlayButton.IsEnabled = false;
-					RecordButton.IsEnabled = false;
-					await CrossMediaManager.Current.Play(filePath);
-					PlayButton.IsEnabled = true;
-					RecordButton.IsEnabled = true;
+					//PlayButton.IsEnabled = false;
+					//RecordButton.IsEnabled = false;
+					//await CrossMediaManager.Current.Play(filePath);
+					//PlayButton.IsEnabled = true;
+					//RecordButton.IsEnabled = true;
+
+					var binaryFile = Translator.GetBinaryFile(filePath);
+					var binaryfileName = Xamarin.Essentials.FileSystem.AppDataDirectory + "/recordedAudio";
+					string documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+					string localFilename = "recordedAudio";
+					string localPath = Path.Combine(documentsPath, localFilename);
+					Translator.SaveBitArrayToFile(binaryFile, localPath);
+					PrintFolderPath(Environment.SpecialFolder.MyDocuments);
 				}
+
 			}
 			catch (Exception ex)
 			{
 				//blow up the app!
 				throw ex;
 			}
+		}
+
+		static void PrintFolderPath(System.Environment.SpecialFolder folder)
+		{
+			var a = ("{0}={1}", folder, System.Environment.GetFolderPath(folder));
+			Console.WriteLine("{0}={1}", folder, System.Environment.GetFolderPath(folder));
 		}
 
 		private async Task<bool> TryToGetPermissionsAsync()

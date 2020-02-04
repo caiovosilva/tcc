@@ -13,5 +13,16 @@ namespace BipTranslator.Services
             byte[] bytes = File.ReadAllBytes(fileName);
             return new BitArray(bytes);
         }
+
+        public static void SaveBitArrayToFile(BitArray bitArray, string fileName)
+        {
+            using (BinaryWriter writer = new BinaryWriter(File.Open(fileName, FileMode.Create)))
+            {
+                for (int i = 0; i < bitArray.Count; i++)
+                {
+                    writer.Write(bitArray[i]);
+                }
+            }
+        }
     }
 }
